@@ -9,23 +9,29 @@ const ScanPreview = () => {
   );
   const [error, setError] = React.useState<string | null>(null);
 
-  const videoRef = React.useRef<HTMLVideoElement>(null);
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
 
   React.useEffect(() => {
     if (navigator?.mediaDevices && accessGranted === null) {
       (async () => {
         try {
+          setAccessGranted(true);
           setError(null);
+
           const stream = await navigator.mediaDevices.getUserMedia({
             video: true,
           });
 
-          setAccessGranted(!!stream);
+          if (stream && videoRef.current?.srcObject === null) {
+            const videoElement = videoRef.current;
+            videoElement.srcObject = stream;
+            videoElement.play();
+          }
         } catch (error) {
-          console.error("Error accessing camera:", error);
-          setError("Error accessing camera. Please check your permissions.");
           setAccessGranted(false);
+          setError("Error accessing camera. Please check your permissions.");
+          console.error("Error accessing camera:", error);
         }
       })();
     }
