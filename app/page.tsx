@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -62,6 +63,8 @@ export default function Home() {
           >
             Documentation
           </a>
+
+          <Button>Scan TPN Label</Button>
         </div>
       </main>
     </div>
