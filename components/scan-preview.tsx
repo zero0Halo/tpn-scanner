@@ -9,12 +9,14 @@ const ScanPreview = () => {
   );
   const [error, setError] = React.useState<string | null>(null);
   const [height, setHeight] = React.useState<number>(0);
+  const [photoTaken, setPhotoTaken] = React.useState<boolean>(false);
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const photoRef = React.useRef<HTMLImageElement>(null);
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
   async function retry() {
+    setPhotoTaken(false);
     videoRef.current?.classList.remove("hidden");
     photoRef.current?.classList.add("hidden");
     await videoRef.current?.play();
@@ -37,6 +39,7 @@ const ScanPreview = () => {
       await videoRef.current?.pause();
       videoRef.current?.classList.add("hidden");
       photoRef.current?.classList.remove("hidden");
+      setPhotoTaken(true);
     }
   }
 
@@ -90,9 +93,11 @@ const ScanPreview = () => {
       <Button size="lg" className="text-xl" onClick={takePicture}>
         Scan TPN Label
       </Button>
-      <Button size="lg" className="text-xl" onClick={retry}>
-        Retry
-      </Button>
+      {photoTaken && (
+        <Button size="lg" className="text-xl" onClick={retry}>
+          Retry
+        </Button>
+      )}
     </div>
   );
 };
