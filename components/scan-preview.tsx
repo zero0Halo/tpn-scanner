@@ -18,11 +18,11 @@ const ScanPreview = () => {
   const photoRef = React.useRef<HTMLImageElement>(null);
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
-  async function stopVideoStream() {
+  function stopVideoStream() {
     const video = videoRef.current;
 
     if (video) {
-      await video?.pause();
+      video?.pause();
       const stream = video.srcObject as MediaStream | null;
       stream?.getTracks().forEach((track) => track.stop());
       video.srcObject = null;
@@ -45,7 +45,7 @@ const ScanPreview = () => {
 
       photoRef.current?.setAttribute("src", data);
 
-      await stopVideoStream();
+      stopVideoStream();
 
       videoRef.current?.classList.add("hidden");
       photoRef.current?.classList.remove("hidden");
@@ -58,7 +58,9 @@ const ScanPreview = () => {
         },
       });
 
-      const [result] = await ocr.predict(photoRef.current as HTMLImageElement);
+      const [result] = await ocr.predict(
+        canvasRef.current as HTMLCanvasElement,
+      );
       console.log(result.items);
 
       setPhotoTaken(true);
