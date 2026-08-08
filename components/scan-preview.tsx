@@ -115,11 +115,15 @@ const ScanPreview = () => {
       <p className="text-gray-500">Scan results will appear here.</p>
 
       {!photoTaken ? (
-        <Button size="lg" className="text-xl" onClick={takePicture}>
+        <Button
+          size="lg"
+          className="text-xl w-full  max-w-[1000px]"
+          onClick={takePicture}
+        >
           Scan TPN Label
         </Button>
       ) : (
-        <Button size="lg" className="text-xl">
+        <Button size="lg" className="text-xl w-full max-w-[1000px]">
           Continue
         </Button>
       )}
