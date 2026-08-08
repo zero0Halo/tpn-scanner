@@ -94,9 +94,14 @@ const ScanPreview = () => {
         Scan TPN Label
       </Button>
       {photoTaken && (
-        <Button size="lg" className="text-xl" onClick={retry}>
-          Retry
-        </Button>
+        <>
+          <Button size="lg" className="text-xl" onClick={retry}>
+            Retry
+          </Button>
+          <Button size="lg" className="text-xl">
+            Continue
+          </Button>
+        </>
       )}
     </div>
   );
