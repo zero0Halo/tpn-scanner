@@ -14,7 +14,13 @@ const ScanPreview = () => {
   const photoRef = React.useRef<HTMLImageElement>(null);
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
-  function takePicture() {
+  async function retry() {
+    videoRef.current?.classList.remove("hidden");
+    photoRef.current?.classList.add("hidden");
+    await videoRef.current?.play();
+  }
+
+  async function takePicture() {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
@@ -27,8 +33,10 @@ const ScanPreview = () => {
       context.drawImage(videoRef.current, 0, 0, width, height);
 
       const data = canvas.toDataURL("image/png");
-      console.log(data);
       photoRef.current?.setAttribute("src", data);
+      await videoRef.current?.pause();
+      videoRef.current?.classList.add("hidden");
+      photoRef.current?.classList.remove("hidden");
     }
   }
 
@@ -77,10 +85,13 @@ const ScanPreview = () => {
       <p className="text-gray-500">Scan results will appear here.</p>
 
       <video ref={videoRef}></video>
-      <canvas ref={canvasRef}></canvas>
-      <img ref={photoRef} alt="Captured photo" />
+      <canvas className="hidden" ref={canvasRef}></canvas>
+      <img className="hidden" ref={photoRef} alt="Captured photo" />
       <Button size="lg" className="text-xl" onClick={takePicture}>
         Scan TPN Label
+      </Button>
+      <Button size="lg" className="text-xl" onClick={retry}>
+        Retry
       </Button>
     </div>
   );
