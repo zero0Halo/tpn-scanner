@@ -10,14 +10,13 @@ const ScanPreview = () => {
     null,
   );
   const [error, setError] = React.useState<string | null>(null);
-  const [height, setHeight] = React.useState<number>(0);
   const [photoTaken, setPhotoTaken] = React.useState<boolean>(false);
+  const [canvasHeight, setCanvasHeight] = React.useState<number>(0);
+  const [canvasWidth, setCanvasWidth] = React.useState<number>(0);
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const photoRef = React.useRef<HTMLImageElement>(null);
   const videoRef = React.useRef<HTMLVideoElement>(null);
-
-  const width = 1000;
 
   async function retry() {
     setPhotoTaken(false);
@@ -28,33 +27,34 @@ const ScanPreview = () => {
 
   async function takePicture() {
     if (!canvasRef.current) return;
+
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
 
     if (!context) return;
 
-    if (width && height && videoRef.current) {
-      canvas.width = width;
-      canvas.height = height;
-      context.filter = `brightness(${1.1}) contrast(${1.25})`;
-      context.drawImage(videoRef.current, 0, 0, width, height);
-
+    if (videoRef.current) {
       const data = canvas.toDataURL("image/png");
+
+      context.filter = `brightness(${1.1}) contrast(${1.25})`;
+      context.drawImage(videoRef.current, 0, 0, canvasWidth, canvasHeight);
       photoRef.current?.setAttribute("src", data);
+
       await videoRef.current?.pause();
+
       videoRef.current?.classList.add("hidden");
       photoRef.current?.classList.remove("hidden");
 
-      const ocr = await PaddleOCR.create({
-        lang: "en",
-        ocrVersion: "PP-OCRv5",
-        ortOptions: {
-          backend: "auto",
-        },
-      });
+      // const ocr = await PaddleOCR.create({
+      //   lang: "en",
+      //   ocrVersion: "PP-OCRv5",
+      //   ortOptions: {
+      //     backend: "auto",
+      //   },
+      // });
 
-      const [result] = await ocr.predict(photoRef.current as HTMLImageElement);
-      console.log(result.items);
+      // const [result] = await ocr.predict(photoRef.current as HTMLImageElement);
+      // console.log(result.items);
 
       setPhotoTaken(true);
     }
@@ -72,18 +72,25 @@ const ScanPreview = () => {
           });
 
           if (stream && videoRef.current?.srcObject === null) {
+            const { height: videoHeight, width: videoWidth } = stream
+              .getVideoTracks()[0]
+              .getSettings();
+            const ratio =
+              videoWidth && videoHeight ? videoWidth / videoHeight : 1;
+            const height =
+              videoHeight && videoHeight < 1000 ? 1000 : (videoHeight ?? 1000);
+            const width =
+              height && videoWidth ? Math.floor(height * ratio) : 1000;
             const videoElement = videoRef.current;
+
+            setCanvasHeight(height);
+            setCanvasWidth(width);
+
             videoElement.srcObject = stream;
             await videoElement.play();
 
-            const height =
-              videoElement?.videoHeight / (videoElement?.videoWidth / width);
-            setHeight(height);
-
-            videoElement.setAttribute("width", width + "");
-            videoElement.setAttribute("height", height + "");
-            canvasRef?.current?.setAttribute("width", width + "");
-            canvasRef?.current?.setAttribute("height", height + "");
+            canvasRef?.current?.setAttribute("width", `${width}`);
+            canvasRef?.current?.setAttribute("height", `${height}`);
           }
         } catch (error) {
           setAccessGranted(false);
@@ -106,7 +113,7 @@ const ScanPreview = () => {
         Scan TPN Label
       </Button>
 
-      <video ref={videoRef}></video>
+      <video className="w-full max-w-[1000px]" ref={videoRef}></video>
       <canvas className="hidden" ref={canvasRef}></canvas>
       <img className="hidden" ref={photoRef} alt="Captured photo" />
 
