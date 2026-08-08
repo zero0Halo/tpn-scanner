@@ -1,6 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import * as React from "react";
+import { PaddleOCR } from "@paddleocr/paddleocr-js";
 import { Button } from "@/components/ui/button";
 
 const ScanPreview = () => {
@@ -14,6 +16,8 @@ const ScanPreview = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const photoRef = React.useRef<HTMLImageElement>(null);
   const videoRef = React.useRef<HTMLVideoElement>(null);
+
+  const width = 1000;
 
   async function retry() {
     setPhotoTaken(false);
@@ -32,6 +36,7 @@ const ScanPreview = () => {
     if (width && height && videoRef.current) {
       canvas.width = width;
       canvas.height = height;
+      context.filter = `brightness(${1.1}) contrast(${1.25})`;
       context.drawImage(videoRef.current, 0, 0, width, height);
 
       const data = canvas.toDataURL("image/png");
@@ -39,11 +44,21 @@ const ScanPreview = () => {
       await videoRef.current?.pause();
       videoRef.current?.classList.add("hidden");
       photoRef.current?.classList.remove("hidden");
+
+      const ocr = await PaddleOCR.create({
+        lang: "en",
+        ocrVersion: "PP-OCRv5",
+        ortOptions: {
+          backend: "auto",
+        },
+      });
+
+      const [result] = await ocr.predict(photoRef.current as HTMLImageElement);
+      console.log(result.items);
+
       setPhotoTaken(true);
     }
   }
-
-  const width = 320;
 
   React.useEffect(() => {
     if (navigator?.mediaDevices && accessGranted === null) {
@@ -87,12 +102,14 @@ const ScanPreview = () => {
       <h3 className="text-lg font-semibold mb-2">Scan Preview</h3>
       <p className="text-gray-500">Scan results will appear here.</p>
 
-      <video ref={videoRef}></video>
-      <canvas className="hidden" ref={canvasRef}></canvas>
-      <img className="hidden" ref={photoRef} alt="Captured photo" />
       <Button size="lg" className="text-xl" onClick={takePicture}>
         Scan TPN Label
       </Button>
+
+      <video ref={videoRef}></video>
+      <canvas className="hidden" ref={canvasRef}></canvas>
+      <img className="hidden" ref={photoRef} alt="Captured photo" />
+
       {photoTaken && (
         <>
           <Button size="lg" className="text-xl" onClick={retry}>
