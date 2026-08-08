@@ -18,11 +18,15 @@ const ScanPreview = () => {
   const photoRef = React.useRef<HTMLImageElement>(null);
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
-  async function retry() {
-    setPhotoTaken(false);
-    videoRef.current?.classList.remove("hidden");
-    photoRef.current?.classList.add("hidden");
-    await videoRef.current?.play();
+  async function stopVideoStream() {
+    const video = videoRef.current;
+
+    if (video) {
+      await video?.pause();
+      const stream = video.srcObject as MediaStream | null;
+      stream?.getTracks().forEach((track) => track.stop());
+      video.srcObject = null;
+    }
   }
 
   async function takePicture() {
@@ -34,27 +38,28 @@ const ScanPreview = () => {
     if (!context) return;
 
     if (videoRef.current) {
-      const data = canvas.toDataURL("image/png");
-
       context.filter = `brightness(${1.1}) contrast(${1.25})`;
       context.drawImage(videoRef.current, 0, 0, canvasWidth, canvasHeight);
+
+      const data = canvas.toDataURL("image/png");
+
       photoRef.current?.setAttribute("src", data);
 
-      await videoRef.current?.pause();
+      await stopVideoStream();
 
       videoRef.current?.classList.add("hidden");
       photoRef.current?.classList.remove("hidden");
 
-      // const ocr = await PaddleOCR.create({
-      //   lang: "en",
-      //   ocrVersion: "PP-OCRv5",
-      //   ortOptions: {
-      //     backend: "auto",
-      //   },
-      // });
+      const ocr = await PaddleOCR.create({
+        lang: "en",
+        ocrVersion: "PP-OCRv5",
+        ortOptions: {
+          backend: "auto",
+        },
+      });
 
-      // const [result] = await ocr.predict(photoRef.current as HTMLImageElement);
-      // console.log(result.items);
+      const [result] = await ocr.predict(photoRef.current as HTMLImageElement);
+      console.log(result.items);
 
       setPhotoTaken(true);
     }
@@ -109,24 +114,23 @@ const ScanPreview = () => {
       <h3 className="text-lg font-semibold mb-2">Scan Preview</h3>
       <p className="text-gray-500">Scan results will appear here.</p>
 
-      <Button size="lg" className="text-xl" onClick={takePicture}>
-        Scan TPN Label
-      </Button>
+      {!photoTaken ? (
+        <Button size="lg" className="text-xl" onClick={takePicture}>
+          Scan TPN Label
+        </Button>
+      ) : (
+        <Button size="lg" className="text-xl">
+          Continue
+        </Button>
+      )}
 
       <video className="w-full max-w-[1000px]" ref={videoRef}></video>
       <canvas className="hidden" ref={canvasRef}></canvas>
-      <img className="hidden" ref={photoRef} alt="Captured photo" />
-
-      {photoTaken && (
-        <>
-          <Button size="lg" className="text-xl" onClick={retry}>
-            Retry
-          </Button>
-          <Button size="lg" className="text-xl">
-            Continue
-          </Button>
-        </>
-      )}
+      <img
+        className="hidden w-full max-w-[1000px]"
+        ref={photoRef}
+        alt="Captured photo"
+      />
     </div>
   );
 };
