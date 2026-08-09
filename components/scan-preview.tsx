@@ -4,6 +4,7 @@
 import * as React from "react";
 import { PaddleOCR } from "@paddleocr/paddleocr-js";
 import { Button } from "@/components/ui/button";
+import toBlob from "@/lib/utils/toBlob";
 
 const ScanPreview = () => {
   const [accessGranted, setAccessGranted] = React.useState<boolean | null>(
@@ -50,21 +51,31 @@ const ScanPreview = () => {
       videoRef.current?.classList.add("hidden");
       photoRef.current?.classList.remove("hidden");
 
-      const ocr = await PaddleOCR.create({
-        lang: "en",
-        ocrVersion: "PP-OCRv5",
-        ortOptions: {
-          backend: "auto",
-        },
-      });
-
-      const [result] = await ocr.predict(
-        canvasRef.current as HTMLCanvasElement,
-      );
-      console.log(result.items);
-
       setPhotoTaken(true);
     }
+  }
+
+  async function handleContinue() {
+    if (!canvasRef.current) return;
+
+    const blob = await toBlob(canvasRef.current);
+    const formData = new FormData();
+    const ocr = await PaddleOCR.create({
+      lang: "en",
+      ocrVersion: "PP-OCRv5",
+      ortOptions: {
+        backend: "auto",
+      },
+    });
+    const [result] = await ocr.predict(canvasRef.current as HTMLCanvasElement);
+
+    formData.append("paddleData", JSON.stringify(result.items));
+    formData.append("canvasData", blob);
+
+    const response = await fetch("/api/open-ai/read-scan", {
+      method: "POST",
+      body: formData,
+    });
   }
 
   React.useEffect(() => {
@@ -125,7 +136,11 @@ const ScanPreview = () => {
           Scan TPN Label
         </Button>
       ) : (
-        <Button size="lg" className="text-xl w-full max-w-[1000px]">
+        <Button
+          size="lg"
+          className="text-xl w-full max-w-[1000px]"
+          onClick={handleContinue}
+        >
           Continue
         </Button>
       )}
