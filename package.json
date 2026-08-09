@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
+    "@openai/agents": "^0.14.3",
     "@paddleocr/paddleocr-js": "^0.4.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

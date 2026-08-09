@@ -1095,6 +1095,67 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@openai/agents-core@npm:0.14.3":
+  version: 0.14.3
+  resolution: "@openai/agents-core@npm:0.14.3"
+  dependencies:
+    "@modelcontextprotocol/sdk": "npm:^1.26.0"
+    debug: "npm:^4.4.0"
+    openai: "npm:^6.46.0"
+  peerDependencies:
+    zod: ^4.0.0
+  dependenciesMeta:
+    "@modelcontextprotocol/sdk":
+      optional: true
+  peerDependenciesMeta:
+    zod:
+      optional: true
+  checksum: 10c0/0fe16e08f552b4233fc75dde64eefcfabcdfe3a98ef169a16ff9b44ba4b3109b1bd6efb792e5c0ded4361e9ae9b0e8c12b7636823955eca7bed8e41200ca862a
+  languageName: node
+  linkType: hard
+
+"@openai/agents-openai@npm:0.14.3":
+  version: 0.14.3
+  resolution: "@openai/agents-openai@npm:0.14.3"
+  dependencies:
+    "@openai/agents-core": "npm:0.14.3"
+    debug: "npm:^4.4.0"
+    openai: "npm:^6.46.0"
+  peerDependencies:
+    zod: ^4.0.0
+  checksum: 10c0/e39c4586daf539b820c4f31aa425110cb581d49ce376174826fd904c98f99407ccf89c5bad3615ecaf93685fb5c0ce347d331c607ce7742c0813c47bb183bbcb
+  languageName: node
+  linkType: hard
+
+"@openai/agents-realtime@npm:0.14.3":
+  version: 0.14.3
+  resolution: "@openai/agents-realtime@npm:0.14.3"
+  dependencies:
+    "@openai/agents-core": "npm:0.14.3"
+    "@types/ws": "npm:^8.18.1"
+    debug: "npm:^4.4.0"
+    ws: "npm:^8.21.0"
+  peerDependencies:
+    zod: ^4.0.0
+  checksum: 10c0/7c5a3486b20254cebb406d1b5ae4cf0081530e3d19466beb5c2cc7edfa889faf3e7db93cf7f723aef81c36934c3c28f7ec8a8c7a10f20ae3120189d1ad00b255
+  languageName: node
+  linkType: hard
+
+"@openai/agents@npm:^0.14.3":
+  version: 0.14.3
+  resolution: "@openai/agents@npm:0.14.3"
+  dependencies:
+    "@openai/agents-core": "npm:0.14.3"
+    "@openai/agents-openai": "npm:0.14.3"
+    "@openai/agents-realtime": "npm:0.14.3"
+    debug: "npm:^4.4.0"
+    openai: "npm:^6.46.0"
+  peerDependencies:
+    zod: ^4.0.0
+  checksum: 10c0/88aeb9c003e99702b6bb04a27132d9a01df7f5bdf7ed96043cf2e757f272238b8b86f43c30892bf74dcae7709ee374519714e493facdac8ea78b9f4ee479e2c9
+  languageName: node
+  linkType: hard
+
 "@paddleocr/paddleocr-js@npm:^0.4.2":
   version: 0.4.2
   resolution: "@paddleocr/paddleocr-js@npm:0.4.2"
@@ -1414,7 +1475,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:>=13.7.0":
+"@types/node@npm:*, @types/node@npm:>=13.7.0":
   version: 26.2.0
   resolution: "@types/node@npm:26.2.0"
   dependencies:
@@ -1454,6 +1515,15 @@ __metadata:
   version: 4.0.2
   resolution: "@types/validate-npm-package-name@npm:4.0.2"
   checksum: 10c0/5a109fe12570b7125740fdac8678970e3caf7de0cbd6e15cf93dad67a427a3a83e0759b5d4b64fd75bce6cdf43b0569275456a35183059046cba6c25d096b916
+  languageName: node
+  linkType: hard
+
+"@types/ws@npm:^8.18.1":
+  version: 8.18.1
+  resolution: "@types/ws@npm:8.18.1"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/61aff1129143fcc4312f083bc9e9e168aa3026b7dd6e70796276dcfb2c8211c4292603f9c4864fae702f2ed86e4abd4d38aa421831c2fd7f856c931a481afbab
   languageName: node
   linkType: hard
 
@@ -5054,6 +5124,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"openai@npm:^6.46.0":
+  version: 6.49.0
+  resolution: "openai@npm:6.49.0"
+  peerDependencies:
+    "@aws-sdk/credential-provider-node": ">=3.972.0 <4"
+    "@smithy/hash-node": ">=4.3.0 <5"
+    "@smithy/signature-v4": ">=5.4.0 <6"
+    ws: ^8.18.0
+    zod: ^3.25 || ^4.0
+  peerDependenciesMeta:
+    "@aws-sdk/credential-provider-node":
+      optional: true
+    "@smithy/hash-node":
+      optional: true
+    "@smithy/signature-v4":
+      optional: true
+    ws:
+      optional: true
+    zod:
+      optional: true
+  checksum: 10c0/c9e748e8a813f948ed925949e857d758505d246d7ec7e939f79cc2ab3383083ccdefff953479afb9dcb0f634cfddb0d442fcf02b6203cc9d6b7c95d3ddbc20ef
+  languageName: node
+  linkType: hard
+
 "optionator@npm:^0.9.3":
   version: 0.9.4
   resolution: "optionator@npm:0.9.4"
@@ -5573,6 +5667,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@base-ui/react": "npm:^1.7.0"
+    "@openai/agents": "npm:^0.14.3"
     "@paddleocr/paddleocr-js": "npm:^0.4.2"
     "@tailwindcss/postcss": "npm:^4"
     "@types/node": "npm:^20"
@@ -6712,6 +6807,21 @@ __metadata:
   version: 1.0.2
   resolution: "wrappy@npm:1.0.2"
   checksum: 10c0/56fece1a4018c6a6c8e28fbc88c87e0fbf4ea8fd64fc6c63b18f4acc4bd13e0ad2515189786dd2c30d3eec9663d70f4ecf699330002f8ccb547e4a18231fc9f0
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.21.0":
+  version: 8.21.3
+  resolution: "ws@npm:8.21.3"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 10c0/7b28dc2863ea0e2cece68d142a3eee90361021b73f750431e6d8076bb7dede5fdfdb75b3d29534b62f411261147b76b1bc80fb5cc63ab0aabd467280e85b22e0
   languageName: node
   linkType: hard
 
