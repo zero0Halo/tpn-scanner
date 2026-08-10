@@ -102,7 +102,9 @@ const ScanPreview = () => {
           setError(null);
 
           const stream = await navigator.mediaDevices.getUserMedia({
-            video: true,
+            video: {
+              facingMode: "environment",
+            },
           });
 
           if (stream && videoRef.current?.srcObject === null) {

@@ -14,11 +14,7 @@ function EditPage() {
   const [imageUrl, setImageUrl] = React.useState<string | null>(null);
   const [labelData, setLabelData] = React.useState<TpnLabel | null>(null);
 
-  const { control, register } = useForm<FormData>({
-    defaultValues: {
-      ingredients: labelData?.ingredients || [],
-    },
-  });
+  const { control, register, reset } = useForm<TpnLabel>();
 
   const { fields } = useFieldArray({
     control,
@@ -48,9 +44,10 @@ function EditPage() {
 
         setImageUrl(url);
         setLabelData(scan.labelData);
+        reset(scan.labelData);
       };
     };
-  }, [scanId]);
+  }, [reset, scanId]);
 
   console.log(labelData);
 
@@ -65,6 +62,7 @@ function EditPage() {
         <div key={field.id}>
           <input {...register(`ingredients.${index}.name`)} />
           <input {...register(`ingredients.${index}.amount`)} />
+          <input {...register(`ingredients.${index}.unit`)} />
         </div>
       ))}
 
