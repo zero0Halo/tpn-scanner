@@ -2,13 +2,15 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { PaddleOCR } from "@paddleocr/paddleocr-js";
 import { Button } from "@/components/ui/button";
 import toBlob from "@/lib/utils/toBlob";
 import saveData from "@/lib/utils/saveData";
-import { TpnLabel } from "@/lib/types";
 
 const ScanPreview = () => {
+  const router = useRouter();
+
   const [accessGranted, setAccessGranted] = React.useState<boolean | null>(
     null,
   );
@@ -25,7 +27,7 @@ const ScanPreview = () => {
     const video = videoRef.current;
 
     if (video) {
-      video?.pause();
+      video.pause();
       const stream = video.srcObject as MediaStream | null;
       stream?.getTracks().forEach((track) => track.stop());
       video.srcObject = null;
@@ -80,9 +82,13 @@ const ScanPreview = () => {
         body: formData,
       });
       const { result: apiResult } = await response.json();
-      const saveResult = await saveData({ image: blob, labelData: apiResult });
+      const saveResultId = await saveData({
+        image: blob,
+        labelData: apiResult,
+      });
 
-      console.log("Data saved successfully:", saveResult);
+      console.log("Data saved successfully:", saveResultId);
+      router.push(`/edit/${saveResultId}`);
     } catch (error) {
       console.error("Error saving data:", error);
     }

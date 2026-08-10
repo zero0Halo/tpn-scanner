@@ -1,8 +1,9 @@
 import { TpnLabel } from "@/lib/types";
 
 function saveData({ image, labelData }: { image: Blob; labelData: TpnLabel }) {
-  return new Promise<boolean>((resolve, reject) => {
+  return new Promise<string | boolean>((resolve, reject) => {
     const request = indexedDB.open("LabelInformationDB", 2);
+    const id = crypto.randomUUID();
 
     request.onupgradeneeded = () => {
       const db = request.result;
@@ -25,13 +26,13 @@ function saveData({ image, labelData }: { image: Blob; labelData: TpnLabel }) {
       const store = transaction.objectStore("scans");
 
       store.add({
-        id: crypto.randomUUID(),
+        id,
         image,
         labelData,
       });
 
       transaction.oncomplete = () => {
-        resolve(true);
+        resolve(id);
       };
 
       transaction.onerror = () => {
