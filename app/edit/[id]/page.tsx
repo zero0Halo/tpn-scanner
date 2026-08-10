@@ -1,8 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useParams } from "next/navigation";
 import React from "react";
+import { useParams } from "next/navigation";
+import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
+import { TpnLabel } from "@/lib/types";
 
 function EditPage() {
   const params = useParams();
@@ -10,6 +12,18 @@ function EditPage() {
   const scanId = Array.isArray(id) ? id[0] : id;
 
   const [imageUrl, setImageUrl] = React.useState<string | null>(null);
+  const [labelData, setLabelData] = React.useState<TpnLabel | null>(null);
+
+  const { control, register } = useForm<FormData>({
+    defaultValues: {
+      ingredients: labelData?.ingredients || [],
+    },
+  });
+
+  const { fields } = useFieldArray({
+    control,
+    name: "ingredients",
+  });
 
   React.useEffect(() => {
     const request = indexedDB.open("LabelInformationDB", 2);
@@ -33,9 +47,12 @@ function EditPage() {
         const url = URL.createObjectURL(scan.image);
 
         setImageUrl(url);
+        setLabelData(scan.labelData);
       };
     };
   }, [scanId]);
+
+  console.log(labelData);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
@@ -43,6 +60,13 @@ function EditPage() {
       <p className="text-lg text-gray-600">
         This is the edit page. You can edit your content here.
       </p>
+
+      {fields.map((field, index) => (
+        <div key={field.id}>
+          <input {...register(`ingredients.${index}.name`)} />
+          <input {...register(`ingredients.${index}.amount`)} />
+        </div>
+      ))}
 
       <div>{imageUrl && <img src={imageUrl} alt="TPN label" />}</div>
     </div>
