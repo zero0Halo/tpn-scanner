@@ -10,9 +10,9 @@ type PaddleEntry = {
   box: PaddleBox;
 };
 
-type PaddleData = PaddleEntry[];
+export type PaddleData = PaddleEntry[];
 
-export type FormData = {
+export type APIFormData = {
   canvasData: HTMLCanvasElement;
   paddleData: PaddleData;
 };

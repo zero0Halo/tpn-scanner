@@ -5,6 +5,7 @@ import * as React from "react";
 import { PaddleOCR } from "@paddleocr/paddleocr-js";
 import { Button } from "@/components/ui/button";
 import toBlob from "@/lib/utils/toBlob";
+import { APIFormData } from "@/lib/types";
 
 const ScanPreview = () => {
   const [accessGranted, setAccessGranted] = React.useState<boolean | null>(
@@ -70,12 +71,15 @@ const ScanPreview = () => {
     const [result] = await ocr.predict(canvasRef.current as HTMLCanvasElement);
 
     formData.append("paddleData", JSON.stringify(result.items));
-    formData.append("canvasData", blob);
+    formData.append("image", blob);
 
     const response = await fetch("/api/open-ai/read-scan", {
       method: "POST",
       body: formData,
     });
+    const apiResult = await response.json();
+
+    console.log("Response from API:", apiResult);
   }
 
   React.useEffect(() => {
