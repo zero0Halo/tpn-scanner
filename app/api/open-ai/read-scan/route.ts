@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { Agent, run } from "@openai/agents";
+import { TpnLabelObj } from "@/lib/types";
 
 export async function POST(req: NextRequest) {
   const API_KEY = process.env.OPENAI_API_KEY || "";
@@ -22,6 +23,7 @@ export async function POST(req: NextRequest) {
 
   const agent = new Agent({
     name: "Analyze TPN Label",
+    outputType: TpnLabelObj,
     instructions: `
 You analyze photographs of TPN medication labels.
 
