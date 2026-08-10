@@ -65,5 +65,5 @@ Use the image and OCR data together to extract the label information.
     },
   ]);
 
-  return NextResponse.json({ result });
+  return NextResponse.json({ result: result.finalOutput });
 }

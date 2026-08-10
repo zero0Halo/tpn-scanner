@@ -5,7 +5,8 @@ import * as React from "react";
 import { PaddleOCR } from "@paddleocr/paddleocr-js";
 import { Button } from "@/components/ui/button";
 import toBlob from "@/lib/utils/toBlob";
-import { APIFormData } from "@/lib/types";
+import saveData from "@/lib/utils/saveData";
+import { TpnLabel } from "@/lib/types";
 
 const ScanPreview = () => {
   const [accessGranted, setAccessGranted] = React.useState<boolean | null>(
@@ -73,13 +74,18 @@ const ScanPreview = () => {
     formData.append("paddleData", JSON.stringify(result.items));
     formData.append("image", blob);
 
-    const response = await fetch("/api/open-ai/read-scan", {
-      method: "POST",
-      body: formData,
-    });
-    const apiResult = await response.json();
+    try {
+      const response = await fetch("/api/open-ai/read-scan", {
+        method: "POST",
+        body: formData,
+      });
+      const { result: apiResult } = await response.json();
+      const saveResult = await saveData({ image: blob, labelData: apiResult });
 
-    console.log("Response from API:", apiResult);
+      console.log("Data saved successfully:", saveResult);
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
   }
 
   React.useEffect(() => {
