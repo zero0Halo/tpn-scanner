@@ -18,6 +18,7 @@ const ScanPreview = () => {
   const [photoTaken, setPhotoTaken] = React.useState<boolean>(false);
   const [canvasHeight, setCanvasHeight] = React.useState<number>(0);
   const [canvasWidth, setCanvasWidth] = React.useState<number>(0);
+  const [cameraStarted, setCameraStarted] = React.useState(false);
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const photoRef = React.useRef<HTMLImageElement>(null);
@@ -95,7 +96,7 @@ const ScanPreview = () => {
   }
 
   React.useEffect(() => {
-    if (navigator?.mediaDevices && accessGranted === null) {
+    if (cameraStarted && navigator?.mediaDevices && accessGranted === null) {
       (async () => {
         try {
           setAccessGranted(true);
@@ -135,32 +136,48 @@ const ScanPreview = () => {
         }
       })();
     }
-  });
+  }, [accessGranted, cameraStarted]);
 
   return (
     <div>
       {error && <p className="text-red-500">{error}</p>}
-      {accessGranted != true && <h2>Please Allow Camera Access</h2>}
+      {accessGranted != true && (
+        <h2 className="pb-4">
+          Please allow camera access by clicking the button below.
+        </h2>
+      )}
 
-      <h3 className="text-lg font-semibold mb-2">Scan Preview</h3>
-      <p className="text-gray-500">Scan results will appear here.</p>
-
-      {!photoTaken ? (
+      {!cameraStarted ? (
         <Button
           size="lg"
-          className="text-xl w-full  max-w-[1000px]"
-          onClick={takePicture}
+          className="w-full h-12 bg-emerald-600 text-base text-white hover:bg-emerald-700"
+          onClick={() => setCameraStarted(true)}
         >
-          Scan TPN Label
+          Start Scanner
         </Button>
       ) : (
-        <Button
-          size="lg"
-          className="text-xl w-full max-w-[1000px]"
-          onClick={handleContinue}
-        >
-          Continue
-        </Button>
+        <>
+          <h3 className="text-lg font-semibold mb-2">Scan Preview</h3>
+          <p className="text-gray-500">Scan results will appear here.</p>
+
+          {!photoTaken ? (
+            <Button
+              size="lg"
+              className="text-xl w-full  max-w-[1000px]"
+              onClick={takePicture}
+            >
+              Scan TPN Label
+            </Button>
+          ) : (
+            <Button
+              size="lg"
+              className="text-xl w-full max-w-[1000px]"
+              onClick={handleContinue}
+            >
+              Continue
+            </Button>
+          )}
+        </>
       )}
 
       <video className="w-full max-w-[1000px]" ref={videoRef}></video>
