@@ -86,6 +86,12 @@ const ScanPreview = () => {
         body: formData,
       });
       const { result: apiResult } = await response.json();
+
+      if (apiResult?.ingredients && apiResult?.ingredients.length === 0) {
+        setError("The label did not have any ingredients. Please try again.");
+        return;
+      }
+
       const saveResultId = await saveData({
         image: blob,
         labelData: apiResult,
@@ -191,6 +197,7 @@ const ScanPreview = () => {
             <Button
               size="lg"
               className="h-12 w-full bg-emerald-600 text-base text-white hover:bg-emerald-700"
+              disabled={processing || error !== null}
               onClick={handleContinue}
             >
               Continue
