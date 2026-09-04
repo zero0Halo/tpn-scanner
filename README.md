@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TPN Scanner
 
-## Getting Started
+TPN Scanner is a mobile-first proof of concept for extracting ingredient information from Total Parenteral Nutrition (TPN) labels using a phone's camera.
 
-First, run the development server:
+The application captures an image of a label, performs OCR in the browser, and uses the resulting text and positional data to identify the ingredients, amounts, and units on the label. The extracted information is then presented alongside the original image so it can be reviewed and corrected.
+
+## Project Status
+
+TPN Scanner is a proof of concept and portfolio project. It was built to explore whether OCR and structured AI parsing could reliably extract useful information from photographed TPN labels.
+
+The current implementation has been tested successfully on Android. The scanning flow does not currently complete on iOS, and iOS support is a known unresolved issue.
+
+It is not intended for clinical use and should not be relied on for medical decisions or medication preparation.
+
+## How It Works
+
+The scanning flow happens in several stages:
+
+1. The user starts the camera and photographs a TPN label.
+2. PaddleOCR processes the image in the browser and extracts text, confidence values, and positional information.
+3. The OCR results are sent to an API route for structured parsing.
+4. The returned data is validated before being stored locally in IndexedDB.
+5. The detected ingredients are displayed in an editable review form alongside the original label.
+
+Keeping OCR in the browser reduces the amount of image data that needs to leave the device while still allowing the extracted information to be processed into a predictable structure.
+
+## Tech
+
+TPN Scanner is built with:
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- PaddleOCR
+- OpenAI API
+- React Hook Form
+- Zod
+- IndexedDB
+
+## Local Setup
+
+Install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+yarn
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create a `.env.local` file with the required OpenAI API configuration.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Start the development server:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+yarn dev
+```
 
-## Learn More
+Then open `http://localhost:3000`.
 
-To learn more about Next.js, take a look at the following resources:
+The primary workflow is designed for a mobile device with a camera, so testing from a phone is recommended.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Why I Built It
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project started with a very specific problem: TPN labels contain a large amount of ingredient information that can be tedious and error-prone to enter manually.
 
-## Deploy on Vercel
+I wanted to see whether a browser-based application could use a phone camera to extract that information while still keeping a person in the loop to verify the results.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The interesting part of the project became the combination of image capture, client-side OCR, positional OCR data, structured AI parsing, validation, local persistence, and an editable review step rather than treating any single extraction result as automatically correct.
