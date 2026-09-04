@@ -17,7 +17,30 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "TPN Scanner",
-  description: "Scans TPN Labels",
+  description:
+    "A mobile-first proof of concept for extracting ingredient information from TPN labels using OCR and structured AI parsing.",
+  applicationName: "TPN Scanner",
+  keywords: [
+    "TPN",
+    "OCR",
+    "label scanner",
+    "Next.js",
+    "React",
+    "TypeScript",
+    "PaddleOCR",
+  ],
+  openGraph: {
+    title: "TPN Scanner",
+    description:
+      "Scan TPN labels with a phone camera and extract ingredient information using OCR and structured AI parsing.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "TPN Scanner",
+    description:
+      "Scan TPN labels with a phone camera and extract ingredient information using OCR and structured AI parsing.",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
