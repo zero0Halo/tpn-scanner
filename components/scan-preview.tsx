@@ -19,6 +19,7 @@ const ScanPreview = () => {
   const [photoTaken, setPhotoTaken] = React.useState<boolean>(false);
   const [canvasHeight, setCanvasHeight] = React.useState<number>(0);
   const [canvasWidth, setCanvasWidth] = React.useState<number>(0);
+  const [processing, setProcessing] = React.useState<boolean>(false);
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const photoRef = React.useRef<HTMLImageElement>(null);
@@ -63,6 +64,8 @@ const ScanPreview = () => {
   async function handleContinue() {
     if (!canvasRef.current) return;
 
+    setProcessing(true);
+
     const blob = await toBlob(canvasRef.current);
     const formData = new FormData();
     const ocr = await PaddleOCR.create({
@@ -92,6 +95,8 @@ const ScanPreview = () => {
       router.push(`/edit/${saveResultId}`);
     } catch (error) {
       console.error("Error saving data:", error);
+    } finally {
+      setProcessing(false);
     }
   }
 
@@ -158,7 +163,7 @@ const ScanPreview = () => {
             className="h-12 w-full bg-emerald-600 text-base text-white hover:bg-emerald-700"
             onClick={handleGrantAccess}
           >
-            Start Scanner
+            Start Camera
           </Button>
         </>
       )}
@@ -210,6 +215,13 @@ const ScanPreview = () => {
       {photoTaken && (
         <div className="text-center text-sm text-gray-500 mt-4">
           Photo Taken. Click continue.
+        </div>
+      )}
+
+      {processing && (
+        <div className="flex flex-col items-center gap-3 py-8">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-sky-800" />
+          <p className="text-sm text-gray-500">Processing image...</p>
         </div>
       )}
     </div>
