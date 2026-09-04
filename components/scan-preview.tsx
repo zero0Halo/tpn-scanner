@@ -14,6 +14,7 @@ const ScanPreview = () => {
   const [accessGranted, setAccessGranted] = React.useState<boolean | null>(
     null,
   );
+  const [cameraLoading, setCameraLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
   const [photoTaken, setPhotoTaken] = React.useState<boolean>(false);
   const [canvasHeight, setCanvasHeight] = React.useState<number>(0);
@@ -94,74 +95,86 @@ const ScanPreview = () => {
     }
   }
 
-  React.useEffect(() => {
-    if (navigator?.mediaDevices && accessGranted === true) {
-      (async () => {
-        try {
-          setError(null);
+  async function handleGrantAccess() {
+    setCameraLoading(true);
 
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: "environment",
-            },
-          });
+    if (navigator?.mediaDevices) {
+      try {
+        setError(null);
 
-          if (stream && videoRef.current?.srcObject === null) {
-            const { height: videoHeight, width: videoWidth } = stream
-              .getVideoTracks()[0]
-              .getSettings();
-            const ratio =
-              videoWidth && videoHeight ? videoWidth / videoHeight : 1;
-            const height =
-              videoHeight && videoHeight < 1000 ? 1000 : (videoHeight ?? 1000);
-            const width =
-              height && videoWidth ? Math.floor(height * ratio) : 1000;
-            const videoElement = videoRef.current;
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: "environment",
+          },
+        });
 
-            setCanvasHeight(height);
-            setCanvasWidth(width);
+        if (stream && videoRef.current?.srcObject === null) {
+          const { height: videoHeight, width: videoWidth } = stream
+            .getVideoTracks()[0]
+            .getSettings();
+          const ratio =
+            videoWidth && videoHeight ? videoWidth / videoHeight : 1;
+          const height =
+            videoHeight && videoHeight < 1000 ? 1000 : (videoHeight ?? 1000);
+          const width =
+            height && videoWidth ? Math.floor(height * ratio) : 1000;
+          const videoElement = videoRef.current;
 
-            videoElement.srcObject = stream;
-            await videoElement.play();
-            setAccessGranted(true);
+          setCanvasHeight(height);
+          setCanvasWidth(width);
 
-            canvasRef?.current?.setAttribute("width", `${width}`);
-            canvasRef?.current?.setAttribute("height", `${height}`);
-          }
-        } catch (error) {
-          setAccessGranted(false);
-          setError("Error accessing camera. Please check your permissions.");
-          console.error("Error accessing camera:", error);
+          videoElement.srcObject = stream;
+          await videoElement.play();
+          setAccessGranted(true);
+
+          canvasRef?.current?.setAttribute("width", `${width}`);
+          canvasRef?.current?.setAttribute("height", `${height}`);
         }
-      })();
+      } catch (error) {
+        setAccessGranted(false);
+        setError("Error accessing camera. Please check your permissions.");
+        console.error("Error accessing camera:", error);
+      } finally {
+        setCameraLoading(false);
+      }
     }
-  }, [accessGranted]);
+  }
 
   return (
     <div>
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
-      {!accessGranted ? (
+      {accessGranted !== true && !cameraLoading && (
         <>
-          <h2 className="text-lg font-semibold pb-4">
+          <h2 className="pb-4 text-lg font-semibold">
             Please allow camera access
           </h2>
+
           <Button
             size="lg"
-            className="w-full h-12 bg-emerald-600 text-base text-white hover:bg-emerald-700"
-            onClick={() => setAccessGranted(true)}
+            className="h-12 w-full bg-emerald-600 text-base text-white hover:bg-emerald-700"
+            onClick={handleGrantAccess}
           >
             Start Scanner
           </Button>
         </>
-      ) : (
+      )}
+
+      {cameraLoading && (
+        <div className="flex flex-col items-center gap-3 py-8">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-sky-800" />
+          <p className="text-sm text-gray-500">Starting camera...</p>
+        </div>
+      )}
+
+      {accessGranted === true && (
         <>
-          <h2 className="text-lg font-semibold pb-4">Scan Preview</h2>
+          <h2 className="pb-4 text-lg font-semibold">Scan Preview</h2>
 
           {!photoTaken ? (
             <Button
               size="lg"
-              className="w-full h-12 bg-emerald-600 text-base text-white hover:bg-emerald-700"
+              className="h-12 w-full bg-emerald-600 text-base text-white hover:bg-emerald-700"
               onClick={takePicture}
             >
               Scan TPN Label
@@ -169,7 +182,7 @@ const ScanPreview = () => {
           ) : (
             <Button
               size="lg"
-              className="text-xl w-full max-w-[1000px]"
+              className="h-12 w-full bg-emerald-600 text-base text-white hover:bg-emerald-700"
               onClick={handleContinue}
             >
               Continue
@@ -179,15 +192,23 @@ const ScanPreview = () => {
       )}
 
       <video
-        className={accessGranted ? "w-full" : "hidden"}
+        className={accessGranted === true && !photoTaken ? "w-full" : "hidden"}
         ref={videoRef}
-      ></video>
-      <canvas className="hidden" ref={canvasRef}></canvas>
+      />
+
+      <canvas className="hidden" ref={canvasRef} />
+
       <img
-        className="hidden w-full max-w-[1000px]"
+        className={photoTaken ? "w-full" : "hidden"}
         ref={photoRef}
         alt="Captured photo"
       />
+
+      {photoTaken && (
+        <div className="text-center text-sm text-gray-500 mt-4">
+          Photo Taken. Click continue.
+        </div>
+      )}
     </div>
   );
 };
