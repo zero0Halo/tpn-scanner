@@ -18,7 +18,6 @@ const ScanPreview = () => {
   const [photoTaken, setPhotoTaken] = React.useState<boolean>(false);
   const [canvasHeight, setCanvasHeight] = React.useState<number>(0);
   const [canvasWidth, setCanvasWidth] = React.useState<number>(0);
-  const [cameraStarted, setCameraStarted] = React.useState(false);
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const photoRef = React.useRef<HTMLImageElement>(null);
@@ -96,10 +95,9 @@ const ScanPreview = () => {
   }
 
   React.useEffect(() => {
-    if (cameraStarted && navigator?.mediaDevices && accessGranted === null) {
+    if (navigator?.mediaDevices && accessGranted === true) {
       (async () => {
         try {
-          setAccessGranted(true);
           setError(null);
 
           const stream = await navigator.mediaDevices.getUserMedia({
@@ -125,6 +123,7 @@ const ScanPreview = () => {
 
             videoElement.srcObject = stream;
             await videoElement.play();
+            setAccessGranted(true);
 
             canvasRef?.current?.setAttribute("width", `${width}`);
             canvasRef?.current?.setAttribute("height", `${height}`);
@@ -136,25 +135,25 @@ const ScanPreview = () => {
         }
       })();
     }
-  }, [accessGranted, cameraStarted]);
+  }, [accessGranted]);
 
   return (
     <div>
       {error && <p className="text-red-500">{error}</p>}
-      {accessGranted != true && (
-        <h2 className="pb-4">
-          Please allow camera access by clicking the button below.
-        </h2>
-      )}
 
-      {!cameraStarted ? (
-        <Button
-          size="lg"
-          className="w-full h-12 bg-emerald-600 text-base text-white hover:bg-emerald-700"
-          onClick={() => setCameraStarted(true)}
-        >
-          Start Scanner
-        </Button>
+      {!accessGranted ? (
+        <>
+          <h2 className="pb-4">
+            Please allow camera access by clicking the button below.
+          </h2>
+          <Button
+            size="lg"
+            className="w-full h-12 bg-emerald-600 text-base text-white hover:bg-emerald-700"
+            onClick={() => setAccessGranted(true)}
+          >
+            Start Scanner
+          </Button>
+        </>
       ) : (
         <>
           <h3 className="text-lg font-semibold mb-2">Scan Preview</h3>
@@ -180,7 +179,10 @@ const ScanPreview = () => {
         </>
       )}
 
-      <video className="w-full max-w-[1000px]" ref={videoRef}></video>
+      <video
+        className={accessGranted ? "w-full" : "hidden"}
+        ref={videoRef}
+      ></video>
       <canvas className="hidden" ref={canvasRef}></canvas>
       <img
         className="hidden w-full max-w-[1000px]"

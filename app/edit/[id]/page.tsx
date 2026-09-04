@@ -3,7 +3,7 @@
 
 import React from "react";
 import { useParams } from "next/navigation";
-import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { TpnLabel } from "@/lib/types";
 
 function EditPage() {
