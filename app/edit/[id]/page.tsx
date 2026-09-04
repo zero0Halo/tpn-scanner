@@ -50,21 +50,75 @@ function EditPage() {
   }, [reset, scanId]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <h1 className="text-4xl font-bold mb-4">Edit Page</h1>
-      <p className="text-lg text-gray-600">
-        This is the edit page. You can edit your content here.
-      </p>
-
-      {fields.map((field, index) => (
-        <div key={field.id}>
-          <input {...register(`ingredients.${index}.name`)} />
-          <input {...register(`ingredients.${index}.amount`)} />
-          <input {...register(`ingredients.${index}.unit`)} />
+    <div className="min-h-screen bg-gray-50 py-6">
+      <div className="w-full max-w-md px-4">
+        <div className="mb-6">
+          <h2 className="pb-4 text-lg font-semibold">Review & Edit Label</h2>
+          <p className="text-sm text-gray-600">
+            Check the scanned values and correct anything that looks wrong.
+          </p>
         </div>
-      ))}
 
-      <div>{imageUrl && <img src={imageUrl} alt="TPN label" />}</div>
+        <section>
+          <h3 className="mb-2 text-md font-semibold">Ingredients</h3>
+
+          <div className="space-y-3">
+            {fields.map((field, index) => (
+              <div
+                key={field.id}
+                className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm"
+              >
+                <label className="mb-1 block text-xs font-medium text-gray-500">
+                  Ingredient
+                </label>
+
+                <input
+                  {...register(`ingredients.${index}.name`)}
+                  className="mb-3 w-full rounded-md border border-gray-300 px-3 py-2 text-base"
+                />
+
+                <div className="grid grid-cols-[1fr_100px] gap-2">
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-gray-500">
+                      Amount
+                    </label>
+
+                    <input
+                      {...register(`ingredients.${index}.amount`, {
+                        valueAsNumber: true,
+                      })}
+                      type="number"
+                      step="any"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-gray-500">
+                      Unit
+                    </label>
+
+                    <input
+                      {...register(`ingredients.${index}.unit`)}
+                      className="w-full rounded-md border border-gray-300 px-3 py-2"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h3 className="mt-16 text-md font-semibold">Scanned Label</h3>
+
+          <img
+            src={imageUrl ?? undefined}
+            alt="Scanned TPN Label"
+            className="mt-6 w-full rounded-lg border border-gray-200"
+          />
+        </section>
+      </div>
     </div>
   );
 }

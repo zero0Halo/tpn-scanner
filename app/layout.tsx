@@ -33,7 +33,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         inter.variable,
       )}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <header className="border-b bg-sky-800 text-white">
+          <div className="mx-auto max-w-3xl px-4 py-3">
+            <h1 className="text-center text-lg font-semibold">TPN Scanner</h1>
+          </div>
+        </header>
+
+        {children}
+      </body>
     </html>
   );
 }
