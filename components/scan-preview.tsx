@@ -137,6 +137,9 @@ const ScanPreview = () => {
       } finally {
         setCameraLoading(false);
       }
+    } else {
+      setCameraLoading(false);
+      setError("Camera access is not available on this device.");
     }
   }
 
