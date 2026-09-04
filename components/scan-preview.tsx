@@ -143,8 +143,8 @@ const ScanPreview = () => {
 
       {!accessGranted ? (
         <>
-          <h2 className="pb-4">
-            Please allow camera access by clicking the button below.
+          <h2 className="text-lg font-semibold pb-4">
+            Please allow camera access
           </h2>
           <Button
             size="lg"
@@ -156,13 +156,12 @@ const ScanPreview = () => {
         </>
       ) : (
         <>
-          <h3 className="text-lg font-semibold mb-2">Scan Preview</h3>
-          <p className="text-gray-500">Scan results will appear here.</p>
+          <h2 className="text-lg font-semibold pb-4">Scan Preview</h2>
 
           {!photoTaken ? (
             <Button
               size="lg"
-              className="text-xl w-full  max-w-[1000px]"
+              className="w-full h-12 bg-emerald-600 text-base text-white hover:bg-emerald-700"
               onClick={takePicture}
             >
               Scan TPN Label
